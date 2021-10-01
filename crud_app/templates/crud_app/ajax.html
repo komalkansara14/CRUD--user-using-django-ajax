@@ -1,0 +1,128 @@
+<script>
+ 
+// Inserting or Updating the data
+
+ $("#savebtn").click(function() {
+  //console.log("Save Button is clicked");
+  output = "";
+  let uid = $("#userid").val();
+  let n = $("#nameid").val();
+  let e = $("#emailid").val();
+  let d = $("#deptid").val();
+  let csrf = $("input[name=csrfmiddlewaretoken]").val();
+  if (n=="" || e=="" || d==""){
+   alert("Please fill all details")
+  }
+
+  else {
+   //console.log(n, e, d);
+   my_data = {
+    userid:uid, 
+    name:n, 
+    email:e, 
+    department:d, 
+    csrfmiddlewaretoken:csrf};
+   $.ajax({
+    url: "{% url 'save_data' %}",
+    method: "POST",
+    data: my_data,
+    success: function(data){
+     console.log(data);
+     //console.log(data.status)
+
+     a = data.user_data;
+     if(data.status == "Save") {
+      $("#msg").text("Form is submitted successfully");
+      $("#msg").show();
+      //console.log("Form is submitted successfully");
+      //alert("Form is submitted successfully");
+      //console.log($("form")[0]);
+      //console.log(data.user_data)
+      for(i=0; i<a.length; i++){
+       output += 
+       "<tr><td>" + 
+       a[i].id + 
+       "</td><td>" 
+       + a[i].name + 
+       "</td><td>" + 
+       
+       a[i].email + "</td><td>" + 
+       a[i].department + 
+       "</td><td><input type='button' class='btn btn-primary btn-sm btn-edit' value='EDIT' data-sid=" + a[i].id +"> <input type='button' class='btn btn-danger btn-sm btn-del' value='DELETE' data-sid=" + a[i].id + "S>" 
+      }
+      $("#tbody").html(output);
+      $("#userid").val('');
+      $("form")[0].reset();
+     }
+     if(data.status == "Fail") {
+      //console.log("There is something wrong while saving the form");
+      //console.log("There is something wrong while saving the form");
+      $("#msg").text("There is something wrong while saving the form");
+      $("#msg").show();
+
+      $("#userid").val('');
+      $("form")[0].reset();
+      
+     }
+    },
+   });
+  }
+  
+
+ });
+
+
+// Deleting the data
+ $("tbody").on("click", ".btn-del", function() {
+  //console.log("Delete button clicked");
+  let id = $(this).attr("data-sid");
+  let csrf = $("input[name=csrfmiddlewaretoken]").val();
+  //console.log(id);
+  my_data = {sid: id, csrfmiddlewaretoken:csrf};
+  my_this = this;
+  $.ajax({
+   url: "{% url 'delete_data' %}",
+   method: "POST",
+   data: my_data,
+   success: function(data){
+    //console.log(data);
+    if(data.status==1){
+     //console.log("Data is deleted successfully")
+     $("#msg").text("Data is deleted successfully");
+     $("#msg").show();
+     $(my_this).closest("tr").fadeOut();
+    }
+    if(data.status==0){
+     $("#msg").text("There is something wrong while deleting data");
+     $("#msg").show();
+     //console.log("There is something wrong while deleting data")
+     
+    }
+   },
+  });
+ });
+
+ // Edit the data
+ $("tbody").on("click", ".btn-edit", function() {
+  //console.log("Edit button clicked");
+  let id = $(this).attr("data-sid");
+  let csrf = $("input[name=csrfmiddlewaretoken]").val();
+  //console.log(id);
+  my_data = {sid: id, csrfmiddlewaretoken:csrf};
+  //my_this = this;
+  $.ajax({
+   url: "{% url 'edit_data' %}",
+   method: "POST",
+   data: my_data,
+   success: function(data){
+    //console.log(data);
+    $("#userid").val(data.id);
+    $("#nameid").val(data.name);
+    $("#emailid").val(data.email);
+    $("#deptid").val(data.department);
+   },
+  });
+ });
+
+ 
+</script>

@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'crud_app/css/bootstrap.css' %}">
+  <title>User Registration</title>
+ </head>
+ <body>
+  <div class="container mt-5">
+   <h2 class="text-center alert alert-danger">Django + ajax CRUD</h2>
+   <div class = "row mt-2">
+    {% comment %} <div class="col-sm-1"></div> {% endcomment %}
+    <div class="col-sm-4">
+     <h4 class="text-center alert alert-warning">Add/Update User</h4>
+     <form action="" method="post">
+      {% csrf_token %}
+        <input type="hidden" name="userid" id="userid" />
+      {{ form.as_p}}
+      <div class="d-grid mt-2">
+       <input type="button" class="btn btn-success" id="savebtn" value="SAVE">
+     </div>
+     </form>
+     <div id="msg" class="alert alert-secondary mt-2" style="display:none">
+     </div>
+    </div>
+    <div class="col-sm-8">
+     <h4 class="text-center alert alert-warning">User Details</h4>
+     <table class="table table-striped mt-3">
+      <thead>
+       <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Department</th>
+        <th scope="col">Action</th>
+       </tr>
+      </thead>
+      <tbody id="tbody">
+       {% for d in data %}
+       <tr>
+        <td>{{d.id}}</td>
+        <td>{{d.name}}</td>
+        <td>{{d.email}}</td>    
+        <td>{{d.department}}</td>
+        <td>
+         <input type="button" data-sid="{{d.id}}" class="btn btn-primary btn-sm btn-edit" value="EDIT">
+         <input type="button" data-sid="{{d.id}}" class="btn btn-danger btn-sm btn-del" value="DELETE">
+
+        </td>
+       </tr>
+       {% endfor %}
+      </tbody>
+     </table>
+    </div>
+    {% comment %} <div class="col-sm-1"></div> {% endcomment %}
+   </div>
+  </div>
+    <script src="{% static 'crud_app/js/jquery.js' %}"></script>
+  <script src="{% static 'crud_app/js/popper.js' %}"></script>
+  <script src="{% static 'crud_app/js/bootstrap.js' %}"></script>
+  {% include 'crud_app/ajax.html' %}
+ </body>
+</html>
